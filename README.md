@@ -4,23 +4,48 @@ A loop dsl for monadic actions.
 
 ### Motivation
 
-Looping in monadic actions always feel awkward. Hope this dsl provides a simple yet powerful enough solution for most use cases. This dsl is only aim for monadic actions.
+A simple looping dsl for monadic actions.
 
-The design is losely influenced by common lisp loop macro.
+### Features
 
+- [X] Index based looping.
+- [X] For each style iterates over a traversable.
+- [X] Breaking out of loop with `quit.`
+- [X] While loop with `while` clause.
+- [x] For each but enumerating index.
+- [] Ergonomic nested loop.
+- [] Full type infernece.
+
+### PS:
+- Breaking loop is achieved by stacking an ExceptT on top of the current monad, so the original actions needs to be lifted
+- Some types can't be inferred at this moment, so you need to feed the type of elements of the container and the parameter. Or you can use the monormophized version in `Control.Monad.Loop.Internal`
 
 ```haskell
 
 main = do
-  -- loop over container and return ()
-  loop `across` [1, 2, 3] `with` \i -> do print i
 
-  -- loop until some condition, return ()
-  loop `across` [1, 2, 3] `while` (/=10) `with` \i -> do print i
+  -- loop over range.
+  loop `across` [(0 :: Int)..] `with` \(i :: Int) -> do
+    if i == 3 then quit else do
+      lift $ putStr "loop 1"
+      lift $ putStrLn $ "=> " ++ show i
 
-  -- loop with access to index.
-  loop `across` [1, 2, 3] `iwith` \(i,v) -> do print i
+  -- enumerating index.
+  loop `across` [0..] `with` \(idx, val) -> do
+    if idx == 3 then quit else do
+      lift $ putStr "loop 2"
+      lift $ putStrLn $ "=> idx: " ++ show idx ++ ", val: " ++ show val
 
-  -- loop, break out on condition
-  loop `across` [1, 2, 3] `with` \i -> do if i = 10 then break else print v
+  -- while loop
+  loop `across` [(0 :: Int)..] `while` (<3) `with` \(val :: Int) -> do
+    lift $ putStrLn "loop3"
+
+
+  -- nested loop
+  loop `across` [(0 :: Int)..] `while` (<3) `with` \(i :: Int) -> do
+    lift $ loop `across` [(0 :: Int)..] `while` (<3) `with` \(j :: Int) -> do
+      lift $ loop `across` [(0 :: Int)..] `while` (<3) `with` \(k :: Int) -> do
+          lift $ putStrLn (show (i, j, k))
 ```
+
+
