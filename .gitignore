@@ -1,0 +1,6 @@
+.stack-work/
+dist-newstyle/
+result/
+.ccls-cache/
+some-git-ignore-files/
+*~
