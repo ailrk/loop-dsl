@@ -22,7 +22,7 @@ A simple looping dsl for monadic actions.
 
 ```haskell
 import Control.Monad.Loop
-main Monad m => m ()
+main :: MonadIO m => m ()
 main = do
 
   -- loop over range.
