@@ -16,24 +16,23 @@ import           Debug.Trace
 
 type Loop :: (Type -> Type) -> Type -> Type
 data Loop m a where
-  Across :: Traversable t => Loop m () -> t a -> Loop m (t a)
+  For :: Traversable t => t a -> Loop m (t a)
   While  :: Traversable t
          => Loop m (t a) -> (a -> Bool) -> Loop m (t a, a -> Bool)
-  Run    :: Loop m ()
+  -- Run    :: Loop m ()
 
-across :: Traversable t => Loop m () -> t a -> Loop m (t a)
-across = Across
+for :: Traversable t => t a -> Loop m (t a)
+for = For
 
 while  :: Traversable t
        => Loop m (t a) -> (a -> Bool) -> Loop m (t a, a -> Bool)
 while = While
 
-loop = Run
+-- loop = Run
 
 evalLoop :: Monad m => Loop m a -> m a
-evalLoop Run = return ()
-evalLoop (Across loop xs) = do
-  _ <- evalLoop loop
+-- evalLoop Run = return ()
+evalLoop (For xs) = do
   return xs
 evalLoop (While loop pred) = do
   xs <- evalLoop loop

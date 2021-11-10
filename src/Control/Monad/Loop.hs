@@ -1,8 +1,8 @@
 {-# LANGUAGE FlexibleInstances        #-}
 {-# LANGUAGE MultiParamTypeClasses    #-}
+{-# LANGUAGE FunctionalDependencies #-}
 module Control.Monad.Loop
-  ( across
-  , loop
+  ( for
   , while
   , with_
   , withi_
