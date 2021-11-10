@@ -12,7 +12,7 @@ version:            0.1.0.0
 -- bug-reports:
 
 -- The license under which the package is released.
--- license:
+license:            MIT
 author:             Ailrk
 maintainer:         jimmy123good@hotmail.com
 
@@ -53,4 +53,3 @@ test-suite test
      , transformers
      , mtl
      , async
-

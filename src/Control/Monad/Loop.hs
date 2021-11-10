@@ -1,14 +1,5 @@
-{-# LANGUAGE FlexibleContexts         #-}
 {-# LANGUAGE FlexibleInstances        #-}
-{-# LANGUAGE FunctionalDependencies   #-}
-{-# LANGUAGE GADTs                    #-}
 {-# LANGUAGE MultiParamTypeClasses    #-}
-{-# LANGUAGE RankNTypes               #-}
-{-# LANGUAGE ScopedTypeVariables      #-}
-{-# LANGUAGE StandaloneKindSignatures #-}
-{-# LANGUAGE TupleSections            #-}
-{-# LANGUAGE TypeFamilies             #-}
-{-# LANGUAGE InstanceSigs #-}
 module Control.Monad.Loop
   ( across
   , loop

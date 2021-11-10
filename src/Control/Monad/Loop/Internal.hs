@@ -1,13 +1,5 @@
-{-# LANGUAGE FlexibleContexts         #-}
-{-# LANGUAGE FlexibleInstances        #-}
-{-# LANGUAGE FunctionalDependencies   #-}
 {-# LANGUAGE GADTs                    #-}
-{-# LANGUAGE MultiParamTypeClasses    #-}
-{-# LANGUAGE RankNTypes               #-}
-{-# LANGUAGE ScopedTypeVariables      #-}
 {-# LANGUAGE StandaloneKindSignatures #-}
-{-# LANGUAGE TupleSections            #-}
-{-# LANGUAGE TypeFamilies             #-}
 module Control.Monad.Loop.Internal where
 
 import           Control.Concurrent

@@ -3,7 +3,6 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 module Main where
 
-import           Control.Concurrent.Async
 import           Control.Monad.Loop
 import           Control.Monad.Loop.Internal
 import           Control.Monad.Reader

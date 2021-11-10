@@ -1,14 +1,5 @@
-{-# LANGUAGE FlexibleContexts         #-}
-{-# LANGUAGE FlexibleInstances        #-}
-{-# LANGUAGE FunctionalDependencies   #-}
 {-# LANGUAGE GADTs                    #-}
 {-# LANGUAGE MultiParamTypeClasses    #-}
-{-# LANGUAGE RankNTypes               #-}
-{-# LANGUAGE ScopedTypeVariables      #-}
-{-# LANGUAGE StandaloneKindSignatures #-}
-{-# LANGUAGE TupleSections            #-}
-{-# LANGUAGE TypeFamilies             #-}
-{-# LANGUAGE DataKinds #-}
 module Control.Monad.Loop.Class
   ( With(..) )
   where
