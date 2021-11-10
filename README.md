@@ -21,7 +21,8 @@ A simple looping dsl for monadic actions.
 - Some types can't be inferred at this moment, so you need to feed the type of elements of the container and the parameter. Or you can use the monormophized version in `Control.Monad.Loop.Internal`
 
 ```haskell
-
+import Control.Monad.Loop
+main Monad m => m ()
 main = do
 
   -- loop over range.
@@ -40,12 +41,9 @@ main = do
   loop `across` [(0 :: Int)..] `while` (<3) `with` \(val :: Int) -> do
     lift $ putStrLn "loop3"
 
-
   -- nested loop
   loop `across` [(0 :: Int)..] `while` (<3) `with` \(i :: Int) -> do
     lift $ loop `across` [(0 :: Int)..] `while` (<3) `with` \(j :: Int) -> do
       lift $ loop `across` [(0 :: Int)..] `while` (<3) `with` \(k :: Int) -> do
           lift $ putStrLn (show (i, j, k))
 ```
-
-

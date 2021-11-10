@@ -3,6 +3,7 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 module Main where
 
+import           Control.Concurrent.Async
 import           Control.Monad.Loop
 import           Control.Monad.Loop.Internal
 import           Control.Monad.Reader
@@ -10,8 +11,10 @@ import           Control.Monad.State
 import           Control.Monad.Trans.Class
 import           Control.Monad.Writer
 
+
 main :: IO ()
 main = do putStrLn "sad"
+
 
 -- loop in simple monad.
 loopTestIO :: IO ()
@@ -19,12 +22,12 @@ loopTestIO = do
   loop `across` [0..] `with_` \i -> do
     if i == 3 then quit else do
       lift $ putStr "loop 1"
-      lift $ putStrLn $ "===> " ++ show i
+      lift $ putStrLn $ "=> " ++ show i
 
   loop `across` [0..] `withi_` \(idx, val) -> do
     if idx == 3 then quit else do
       lift $ putStr "loop 2"
-      lift $ putStrLn $ "===> idx: " ++ show idx ++ ", value: " ++ show val
+      lift $ putStrLn $ "=> idx: " ++ show idx ++ ", value: " ++ show val
 
   loop `across` [0..] `while` (<3) `withWhile_` \val -> do
     lift $ putStrLn "loop3"
@@ -52,29 +55,13 @@ loopTestWithClassIO = do
 data Code = Push Int | Pop | Add deriving Show
 type Input = [Code]; type Output = [Int]; type Stack = [Int]
 newtype VM_ a = VM_ { unVM :: WriterT Output (ReaderT Input (State Stack)) a }
-  deriving ( Functor, Applicative, Monad, MonadReader Input
-           , MonadWriter Output
-           , MonadState Stack)
+  deriving ( Functor, Applicative, Monad, MonadReader Input , MonadWriter Output , MonadState Stack)
 type VM = VM_ ()
 runVM input = flip evalStateT [] . flip runReaderT input . execWriterT . unVM
 
 evalCode :: Code -> VM
 evalCode (Push n) = modify (n:)
-evalCode Pop = do
-  xs <- get
-  case xs of
-    []     -> return ()
-    (a:as) -> do put as; tell [a]
-evalCode Add = do
-  xs <- get
-  case xs of
-    (a:b:as) -> put (a + b : as)
-    _        -> return ()
+evalCode Pop = do xs <- get; case xs of []     -> return (); (a:as) -> do put as; tell [a];
+evalCode Add = do xs <- get; case xs of (a:b:as) -> put (a + b : as); _        -> return ();
 
-eval :: VM
-eval = do
-  ins <- ask
-  case ins of
-    []     -> return ()
-    (i:is) -> do evalCode i; local tail eval
-  return ()
+eval = do ins <- ask; case ins of [] -> return (); (i:is) -> do evalCode i; local tail eval; return ()
