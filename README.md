@@ -13,8 +13,8 @@ A simple looping dsl for monadic actions.
 - [X] Breaking out of loop with `quit.`
 - [X] While loop with `while` clause.
 - [x] For each but enumerating index.
-- [] Ergonomic nested loop.
-- [] Full type infernece.
+- [ ] Ergonomic nested loop.
+- [ ] Full type infernece.
 
 ### PS:
 - Breaking loop is achieved by stacking an ExceptT on top of the current monad, so the original actions needs to be lifted
