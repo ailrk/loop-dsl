@@ -91,3 +91,7 @@ withWhilei_ loop k = do
 -- | break to the outer loop.
 quit :: Monad m => ExceptT () m a
 quit = throwError ()
+
+-- | break to the outer most loop.
+cease :: Monad m => ExceptT () m a
+cease = quit >> cease

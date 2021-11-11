@@ -1,4 +1,4 @@
-# Loop
+# loop-dsl
 
 A loop dsl for monadic actions.
 
@@ -26,15 +26,15 @@ main = do
 
   -- loop over range.
   for [(0 :: Int)..] `with` \(i :: Int) -> do
-    if i == 3 then quit else do
-      lift $ putStr "loop 1"
-      lift $ putStrLn $ "=> " ++ show i
+    if i == 3 then quit else lift $ do
+      putStr "loop 1"
+      putStrLn $ "=> " ++ show i
 
   -- enumerating index.
   for [0..] `with` \(idx, val) -> do
-    if idx == 3 then quit else do
-      lift $ putStr "loop 2"
-      lift $ putStrLn $ "=> idx: " ++ show idx ++ ", val: " ++ show val
+    if idx == 3 then quit else $ do
+      putStr "loop 2"
+      putStrLn $ "=> idx: " ++ show idx ++ ", val: " ++ show val
 
   -- while loop
   for [(0 :: Int)..] `while` (<3) `with` \(val :: Int) -> do
@@ -45,11 +45,25 @@ main = do
     for [(0 :: Int)..] `while` (<3) `with` \(j :: Int) -> lift $ do
       putStrLn $ show i ++ ", " ++ show j
 
-  -- using quit and nested loops. quit is just throwError ().
+  -- using `quit` and nested loops. quit is just throwError ().
   for [(0 :: Int)..] `while` (<3) `with` \(i :: Int) -> do
     if i == 2 then
       quit
     else lift $
       for [(0 :: Int)..] `while` (<3) `with` \(j :: Int) -> lift $ do
         putStrLn $ show i ++ ", " ++ show j
+
+  -- break to the outer most loop with `cease`
+  for [(0 :: Int)..3] `with` \(i :: Int) -> lift $ do
+    for [(0 :: Int)..3] `with` \(j :: Int) -> do
+      if j == 2 then cease else
+        lift $ putStrLn $ show i ++ " " ++ show j
+
+
+```
+
+
+### A quick sort example
+```
+
 ```

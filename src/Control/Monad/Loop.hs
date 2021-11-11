@@ -9,6 +9,7 @@ module Control.Monad.Loop
   , withWhile_
   , withWhilei_
   , quit
+  , cease
   , module Control.Monad.Loop.Class
   )
   where

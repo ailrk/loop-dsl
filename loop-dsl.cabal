@@ -53,3 +53,4 @@ test-suite test
      , transformers
      , mtl
      , async
+     , vector
