@@ -63,7 +63,86 @@ main = do
 ```
 
 
-### A quick sort example
+### nQeen with loop
+```haskell
+nQueen :: Int -> IO ()
+nQueen n = do
+  board <- newBoard
+  nSols <- newMVar 0
+  nqueen nSols board 0
+  putStrLn . show =<< takeMVar nSols
+  where
+    newBoard = UV.replicate n (0 :: Int)
+    nqueen nSols board i = flip runContT return . callCC $ \ret -> do
+      boardConst <- G.freeze board
+      let nestedSearch () = lift $ do
+            for [(0::Int)..GM.length board-1] `with` \col -> liftIO $ do
+              GM.unsafeWrite board i col
+              nqueen nSols board (i + 1)
+
+      when (i >= GM.length board) $ do
+        when (good boardConst i) $ liftIO $ do
+          nSols `modifyMVar_` (return . (+1))
+          printBoard board
+        ret ()
+
+      when (not (good boardConst i)) $ ret ()
+      nestedSearch ()
+
+    threaten rA cA rB cB = rA == rB || cA == cB || abs (rA - rB) == abs (cA - cB)
+    good board endIdx = flip evalState True $ do
+      for [(0::Int)..endIdx-1] `with` \(rA :: Int) -> do
+        for [rA+1..endIdx-1] `with` \(rB :: Int) -> lift $ do
+          let cA = board G.! rA
+          let cB = board G.! rB
+          when (threaten rA cA rB cB) $ do
+            lift $ put False
+            cease
+      get
+
+    printBoard board = let loop = (for [(0::Int)..n-1] `with`) in do
+      loop $ \(i::Int) -> liftIO $ do
+        loop $ \(j::Int) -> liftIO $ do
+          v <- board `GM.unsafeRead` i;
+          putStr $ (if v == j then 'X' else '_') : " "
+        putStrLn ""
+      putStrLn ""
 ```
 
+### Caveat
+
+Under the hoode the loop body is in an `ExceptT () m ()`, so for a nested loop the inner loop body has type `ExceptT () (ExceptT m ()) ()`, which type checks even if you don't lift the action, which might leads to unintented behavior. For example, the following code is not really a double for loop:
+
+```haskell
+wrong = do
+  for [(0::Int)..2] `with` \(i :: Int) -> do
+    for [i+1..4] `with` \(j :: Int) -> do
+      liftIO $ putStrLn $ show (i, j)
+      if (rB == 3) then do liftIO $ putStrLn "cease!" cease else return ()
+
+-- output:
+-- (0,1)
+-- (0,2)
+-- (0,3)
+-- cease!
+-- (1,2)
+-- (1,3)
+-- cease!
+-- (2,3)
+-- cease!
+```
+
+Instead we need to lift the inner loop body to the first except
+
+```haskell
+right = do
+  for [(0::Int)..2] `with` \(i :: Int) -> do
+    for [i+1..4] `with` \(j :: Int) -> lift $ do
+      liftIO $ putStrLn $ show (i, j
+      if (rB == 3) then do liftIO $ putStrLn "cease!" cease else return ()
+-- output:
+-- (0,1)
+-- (0,2)
+-- (0,3)
+-- cease!
 ```

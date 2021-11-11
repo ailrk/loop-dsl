@@ -6,7 +6,6 @@
 {-# OPTIONS_GHC -Wno-deferred-out-of-scope-variables #-}
 module Main where
 
-import Debug.Trace
 import           Control.Concurrent.Async
 import           Control.Concurrent.MVar
 import           Control.Monad.Cont
@@ -82,68 +81,56 @@ loopTestMutation = do
 
 -- imperative nQueen
 nQueen :: Int -> IO ()
-nQueen n = do
-  board <- newBoard
-  nSols <- newMVar 0
-  nqueen nSols board 0
-  putStrLn . show =<< takeMVar nSols
+nQueen n = do board <- newBoard; nSols <- newMVar 0; nqueen nSols board 0
   where
-    copyBoard board = G.thaw =<< G.freeze board
-    newBoard = UV.replicate n (0 :: Int)
+    newBoard = UV.replicate n ((-1) :: Int)
     nqueen nSols board i = flip runContT return . callCC $ \ret -> do
-      let parallelSearch () = liftIO $ do -- IO [Async ()]
-            threads <- sequence $
-              [ do GM.unsafeWrite board i col
-                   thread <- async $ do
-                     nb <- copyBoard board
-                     nqueen nSols nb (i + 1)
-                   return thread
-              | col <- [0..GM.length board] ]
-            for threads `with` \t -> lift $ do wait t
-
-      boardConst <- G.freeze board
+      -- let parallelSearch () = lift $ do -- IO [Async ()]
+      --       threads <- sequence $
+      --         [ do GM.unsafeWrite board i col
+      --              thread <- async $ do
+      --                nb <- G.thaw =<< G.freeze board
+      --                nqueen nSols nb (i + 1)
+      --              return thread
+      --         | col <- [0..GM.length board] ]
+      --       mapConcurrently_ wait threads
       let nestedSearch () = lift $ do
             for [(0::Int)..GM.length board-1] `with` \col -> liftIO $ do
               GM.unsafeWrite board i col
               nqueen nSols board (i + 1)
 
+      boardConst <- G.freeze board
       when (i >= GM.length board) $ do
-        when (good boardConst i) $ liftIO $ do
-          nSols `modifyMVar_` (return . (+1))
-          printBoard board
+        -- when (good boardConst i) $ liftIO $ do
+        --   nSols `modifyMVar_` (return . (+1))
+        --   printBoard board
+
+        if (good boardConst i)
+           then liftIO $ do
+             nSols `modifyMVar_` (return . (+1))
+             printBoard board
+           else liftIO $ printStrLn "not really"
+
         ret ()
-
       when (not (good boardConst i)) $ ret ()
-      if i == 0 then parallelSearch () else nestedSearch ()
-
+      nestedSearch ()
+      -- if (i == 0) then parallelSearch () else nestedSearch ()
     threaten rA cA rB cB = rA == rB || cA == cB || abs (rA - rB) == abs (cA - cB)
     good board endIdx = flip evalState True $ do
       for [(0::Int)..endIdx-1] `with` \(rA :: Int) -> do
-        for [rA+1..endIdx-1] `with` \(rB :: Int) -> lift $ do
+        for [rA+1..endIdx-1] `with` \(rB :: Int) -> do
           let cA = board G.! rA
           let cB = board G.! rB
-          when (threaten rA cA rB cB) $ do
-            lift $ put False
-            cease
+          when (threaten rA cA rB cB) $ put False
+          cease
       get
-
     printBoard board = let loop = (for [(0::Int)..n-1] `with`) in do
-      loop $ \(i::Int) -> liftIO $ do
-        loop $ \(j::Int) -> liftIO $ do
+      loop $ \(i::Int) -> lift $ do
+        loop $ \(j::Int) -> lift $ do
           v <- board `GM.unsafeRead` i;
           putStr $ (if v == j then 'X' else '_') : " "
         putStrLn ""
       putStrLn ""
-
-test1 :: IO ()
-test1 = do
-  for [(0::Int)..2] `with` \(rA :: Int) -> do
-    for [rA+1..4] `with` \(rB :: Int) -> lift $ do
-      liftIO $ putStrLn $ show (rA, rB)
-      if (rB == 3) then do
-        liftIO $ putStrLn "cease!"
-        cease
-      else return ()
 
 -- custom monad.
 data Code = Push Int | Pop | Add deriving Show
