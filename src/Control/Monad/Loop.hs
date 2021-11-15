@@ -1,6 +1,6 @@
-{-# LANGUAGE FlexibleInstances        #-}
-{-# LANGUAGE MultiParamTypeClasses    #-}
+{-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
 module Control.Monad.Loop
   ( for
   , while
@@ -16,10 +16,10 @@ module Control.Monad.Loop
 
 -- This library provides a simple dsl that mimics imperative loop.
 
-import           Control.Monad.Except
-import           Control.Monad.Loop.Class
-import           Control.Monad.Loop.Internal
-import           Data.Kind
+import           Control.Monad.Loop.Class    (With (..))
+import           Control.Monad.Loop.Internal (cease, for, quit, while,
+                                              withWhile_, withWhilei_, with_,
+                                              withi_)
 
 
 instance (Monad m, Traversable t, Integral n) => With m (t a, a -> Bool) (n, a) where

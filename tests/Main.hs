@@ -91,30 +91,18 @@ nQueen n = do
     copyBoard board = G.thaw =<< G.freeze board
     newBoard = UV.replicate n (0 :: Int)
     nqueen nSols board i = flip runContT return . callCC $ \ret -> do
-      let parallelSearch () = liftIO $ do -- IO [Async ()]
-            threads <- sequence $
-              [ do GM.unsafeWrite board i col
-                   thread <- async $ do
-                     nb <- copyBoard board
-                     nqueen nSols nb (i + 1)
-                   return thread
-              | col <- [0..GM.length board] ]
-            for threads `with` \t -> lift $ do wait t
-
       boardConst <- G.freeze board
       let nestedSearch () = lift $ do
             for [(0::Int)..GM.length board-1] `with` \col -> liftIO $ do
               GM.unsafeWrite board i col
               nqueen nSols board (i + 1)
-
       when (i >= GM.length board) $ do
         when (good boardConst i) $ liftIO $ do
           nSols `modifyMVar_` (return . (+1))
           printBoard board
         ret ()
-
       when (not (good boardConst i)) $ ret ()
-      if i == 0 then parallelSearch () else nestedSearch ()
+      nestedSearch ()
 
     threaten rA cA rB cB = rA == rB || cA == cB || abs (rA - rB) == abs (cA - cB)
     good board endIdx = flip evalState True $ do

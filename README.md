@@ -9,15 +9,15 @@ A simple looping dsl for monadic actions.
 ### Features
 
 - [X] Index based looping.
-- [X] For each style iterates over a traversable.
-- [X] Breaking out of loop with `quit.`
+- [X] For-each style iterates over a traversable.
+- [X] Breaking out of loop with `quit` and `cease`.
 - [X] While loop with `while` clause.
-- [X] For each but enumerating index.
+- [X] For-each while enumerating index.
 - [X] Nested loop.
-- [ ] Full type infernece.
+- [ ] Full type inference.
 
 ### PS:
-- Breaking loop is achieved by stacking an ExceptT on top of the current monad, so the original actions needs to be lifted
+- Loop breaking is achieved by stacking an ExceptT on top of the current monad, so the original action needs to be lifted.
 - Some types can't be inferred at this moment, so you need to feed the type of elements of the container and the parameter. Or you can use the monormophized version in `Control.Monad.Loop.Internal`
 
 ```haskell
@@ -118,7 +118,9 @@ wrong = do
   for [(0::Int)..2] `with` \(i :: Int) -> do
     for [i+1..4] `with` \(j :: Int) -> do
       liftIO $ putStrLn $ show (i, j)
-      if (rB == 3) then do liftIO $ putStrLn "cease!" cease else return ()
+      if (rB == 3)
+        then do liftIO $ putStrLn "cease!" >> cease
+        else return ()
 
 -- output:
 -- (0,1)
@@ -138,8 +140,10 @@ Instead we need to lift the inner loop body to the first except
 right = do
   for [(0::Int)..2] `with` \(i :: Int) -> do
     for [i+1..4] `with` \(j :: Int) -> lift $ do
-      liftIO $ putStrLn $ show (i, j
-      if (rB == 3) then do liftIO $ putStrLn "cease!" cease else return ()
+      liftIO $ putStrLn $ show (i, j)
+      if (rB == 3)
+        then liftIO $ putStrLn "cease!" >> cease
+        else return ()
 -- output:
 -- (0,1)
 -- (0,2)

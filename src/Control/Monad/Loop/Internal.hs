@@ -2,16 +2,12 @@
 {-# LANGUAGE StandaloneKindSignatures #-}
 module Control.Monad.Loop.Internal where
 
-import           Control.Concurrent
-import           Control.Monad
-import           Control.Monad.Except
-import           Control.Monad.ST.Lazy
-import           Control.Monad.State
-import           Data.Foldable
-import           Data.Kind            (Type)
-import           Data.Maybe
-import           Data.STRef.Lazy
-import           Debug.Trace
+import           Control.Monad.Except  (ExceptT, MonadError (throwError),
+                                        runExceptT)
+import           Control.Monad.ST.Lazy (runST)
+import           Data.Foldable         (traverse_)
+import           Data.Kind             (Type)
+import           Data.STRef.Lazy       (modifySTRef, newSTRef, readSTRef)
 
 
 type Loop :: (Type -> Type) -> Type -> Type
@@ -27,8 +23,6 @@ for = For
 while  :: Traversable t
        => Loop m (t a) -> (a -> Bool) -> Loop m (t a, a -> Bool)
 while = While
-
--- loop = Run
 
 evalLoop :: Monad m => Loop m a -> m a
 -- evalLoop Run = return ()
