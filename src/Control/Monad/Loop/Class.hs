@@ -4,8 +4,6 @@ module Control.Monad.Loop.Class
   ( With(..) )
   where
 
--- This library provides a simple dsl that mimics imperative loop.
-
 import           Control.Monad.Except        (ExceptT)
 import           Control.Monad.Loop.Internal (Loop)
 

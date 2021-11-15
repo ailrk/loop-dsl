@@ -2,14 +2,10 @@ cabal-version:      2.4
 name:               loop-dsl
 version:            0.1.0.0
 
--- A short (one-line) description of the package.
--- synopsis:
-
--- A longer description of the package.
+synopsis:           A simple loop dsl for monadic actions.
 description:        A simple loop dsl for monadic actions.
-
--- A URL where users can report bugs.
--- bug-reports:
+homepage:           https://github.com/ailrk/loop-dsl
+bug-reports:        https://github.com/ailrk/loop-dsl/issues
 
 -- The license under which the package is released.
 license:            MIT
@@ -17,18 +13,20 @@ author:             Ailrk
 maintainer:         jimmy123good@hotmail.com
 
 -- A copyright notice.
-copyright:
+copyright:          (c) Ailrk 2021
 category:           Control
-extra-source-files: CHANGELOG.md
+extra-source-files:
+    CHANGELOG.md
+
+source-repository head
+  type:              git
+  location:          https://github.com/ailrk/loop-dsl.git
 
 library
     exposed-modules:
         Control.Monad.Loop
         Control.Monad.Loop.Internal
         Control.Monad.Loop.Class
-
-    -- Modules included in this library but not exported.
-    -- other-modules:
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

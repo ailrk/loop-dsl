@@ -15,7 +15,6 @@ data Loop m a where
   For :: Traversable t => t a -> Loop m (t a)
   While  :: Traversable t
          => Loop m (t a) -> (a -> Bool) -> Loop m (t a, a -> Bool)
-  -- Run    :: Loop m ()
 
 for :: Traversable t => t a -> Loop m (t a)
 for = For
