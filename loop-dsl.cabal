@@ -6,7 +6,7 @@ version:            0.1.0.0
 -- synopsis:
 
 -- A longer description of the package.
--- description:
+description:        A simple loop dsl for monadic actions.
 
 -- A URL where users can report bugs.
 -- bug-reports:
@@ -17,8 +17,8 @@ author:             Ailrk
 maintainer:         jimmy123good@hotmail.com
 
 -- A copyright notice.
--- copyright:
--- category:
+copyright:
+category:           Control
 extra-source-files: CHANGELOG.md
 
 library
@@ -52,5 +52,4 @@ test-suite test
      , hspec
      , transformers
      , mtl
-     , async
      , vector

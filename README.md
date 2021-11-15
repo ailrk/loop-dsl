@@ -1,10 +1,6 @@
 # loop-dsl
 
-A loop dsl for monadic actions.
-
-### Motivation
-
-A simple looping dsl for monadic actions.
+A simple loop dsl for monadic actions.
 
 ### Features
 
@@ -58,8 +54,6 @@ main = do
     for [(0 :: Int)..3] `with` \(j :: Int) -> do
       if j == 2 then cease else
         lift $ putStrLn $ show i ++ " " ++ show j
-
-
 ```
 
 

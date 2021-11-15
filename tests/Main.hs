@@ -7,7 +7,6 @@
 module Main where
 
 import Debug.Trace
-import           Control.Concurrent.Async
 import           Control.Concurrent.MVar
 import           Control.Monad.Cont
 import           Control.Monad.Loop
