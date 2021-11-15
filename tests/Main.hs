@@ -126,11 +126,12 @@ test1 :: IO ()
 test1 = do
   for [(0::Int)..2] `with` \(rA :: Int) -> do
     for [rA+1..4] `with` \(rB :: Int) -> lift $ do
-      liftIO $ putStrLn $ show (rA, rB)
-      if (rB == 3) then do
-        liftIO $ putStrLn "cease!"
-        cease
-      else return ()
+      for [rB+1..6] `with` \(rC :: Int) -> lift $ do
+        liftIO $ putStrLn $ show (rA, rB)
+        if (rA == 1 && rB == 3) then do
+          liftIO $ putStrLn "cease!"
+          cease
+        else return ()
 
 -- custom monad.
 data Code = Push Int | Pop | Add deriving Show

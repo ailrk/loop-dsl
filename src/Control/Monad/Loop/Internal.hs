@@ -12,9 +12,8 @@ import           Data.STRef.Lazy       (modifySTRef, newSTRef, readSTRef)
 
 type Loop :: (Type -> Type) -> Type -> Type
 data Loop m a where
-  For :: Traversable t => t a -> Loop m (t a)
-  While  :: Traversable t
-         => Loop m (t a) -> (a -> Bool) -> Loop m (t a, a -> Bool)
+  For    :: t a -> Loop m (t a)
+  While  :: Loop m (t a) -> (a -> Bool) -> Loop m (t a, a -> Bool)
 
 for :: Traversable t => t a -> Loop m (t a)
 for = For
