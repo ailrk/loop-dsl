@@ -2,6 +2,14 @@
 
 A simple loop dsl for monadic actions.
 
+```
+  -- loop over range.
+  for [(0 :: Int)..] `with` \(i :: Int) -> do
+    if i == 3 then quit else lift $ do
+      putStr "loop 1"
+      putStrLn $ "=> " ++ show i
+```
+
 ### Features
 
 - [X] Index based looping.
@@ -11,6 +19,10 @@ A simple loop dsl for monadic actions.
 - [X] For-each while enumerating index.
 - [X] Nested loop.
 - [ ] Full type inference.
+
+### Motivation
+An imperative loop is equipped with control flow constructs by deafult. You can loop over a block statement with effects, and you can break out at any point in the middle of the loop body with `break` or `return`. In haskell we do one thing at a time: to perform effects we use `sequence` or `traverse` on `Traversable`; to break out of an execution we either use `ExceptT` or `ContT`. This pattern is commonly used, and sometimes it's annoying to not have them together. The power of starting an iteration, terminate it base on some conditions, and being able to leave the state as whatever it is when it's stopped is very useful for implementing some imperative algorithms.
+
 
 ### PS:
 - Loop breaking is achieved by stacking an ExceptT on top of the current monad, so the original action needs to be lifted.
