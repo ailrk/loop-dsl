@@ -2,7 +2,7 @@
 
 A simple loop dsl for monadic actions.
 
-```
+```haskell
   -- loop over range.
   for [(0 :: Int)..] `with` \(i :: Int) -> do
     if i == 3 then quit else lift $ do
