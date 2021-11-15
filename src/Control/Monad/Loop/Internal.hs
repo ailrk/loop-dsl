@@ -15,26 +15,30 @@ data Loop m a where
   For    :: t a -> Loop m (t a)
   While  :: Loop m (t a) -> (a -> Bool) -> Loop m (t a, a -> Bool)
 
+-- | `for` clause to start a loop
 for :: Traversable t => t a -> Loop m (t a)
 for = For
 
+{- | `while` clause to determine the terminal condition of a loop.
+
+@
+  for [(0::Int)..] \`while\` (\<10) \`with`\ \\(i::Int) -> lift do
+    putStrLn "hi"
+@
+
+-}
 while  :: Traversable t
        => Loop m (t a) -> (a -> Bool) -> Loop m (t a, a -> Bool)
 while = While
 
 evalLoop :: Monad m => Loop m a -> m a
--- evalLoop Run = return ()
 evalLoop (For xs) = do
   return xs
 evalLoop (While loop pred) = do
   xs <- evalLoop loop
   return (xs, pred)
 
--- implementation for different `with`
-type WithTy m r loopRet actParam =
-  Loop m loopRet -> (actParam -> ExceptT () m ()) -> m ()
-
-
+-- | start a for-each style loop.
 with_ :: (Traversable t, Monad m)
       => Loop m (t a) -> (a -> ExceptT () m ()) -> m ()
 with_ loop k = do
@@ -50,8 +54,7 @@ enumerateTrav ts = runST $ do
     idxref `modifySTRef` (+ 1)
     return (idx, value)
 
--- With clause
-
+-- | start a for-each style loop with access to indices.
 withi_ :: (Traversable t, Monad m, Integral n)
        => Loop m (t a) -> ((n, a) -> ExceptT () m ()) -> m ()
 withi_ loop k = do
@@ -61,6 +64,7 @@ withi_ loop k = do
     $ xs
   return ()
 
+-- | start a for-each style loop with while clause.
 withWhile_ :: (Traversable t, Monad m)
            => Loop m (t a, a -> Bool) -> (a -> ExceptT () m ()) -> m ()
 withWhile_ loop k = do
@@ -70,6 +74,7 @@ withWhile_ loop k = do
     $ ts
   return ()
 
+-- | start a for-each style loop with while clause and access to indices.
 withWhilei_ :: (Traversable t, Monad m, Integral n)
            => Loop m (t a, a -> Bool) -> ((n, a) -> ExceptT () m ()) -> m ()
 withWhilei_ loop k = do
